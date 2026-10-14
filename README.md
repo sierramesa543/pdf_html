@@ -16,26 +16,40 @@ construida con **FastAPI**, usando plantillas **Jinja2** para el HTML y la libre
   en la etiqueta `img`.
 - El patron **preview HTML -> descargar PDF** se repite igual en ambos reportes.
 
-Dependencias principales (ver `pyproject.toml`):
+Dependencias de ejecucion (ver `requirements.txt`):
 
-- `fastapi[standard]` — framework web y CLI.
+- `fastapi` — framework web y punto de entrada ASGI.
+- `jinja2` — motor de plantillas para las paginas HTML.
 - `xhtml2pdf` — conversion de HTML/CSS a PDF.
-- `jinja2` — motor de plantillas (incluido con `fastapi[standard]`).
 
 ## Estructura del proyecto
 
 ```
 .
 ├── main.py               # Aplicacion FastAPI: rutas (preview y PDF)
-├── pyproject.toml        # Dependencias y entrypoint de FastAPI
+├── requirements.txt      # Dependencias necesarias en tiempo de ejecucion
+├── .python-version       # Version de Python soportada por Vercel
 ├── assets/
-│   └── logo.png          # Logo de ejemplo (servido en web y leido en el PDF)
+│   └── logo.png          # Logo servido en web e incluido en los PDF
 ├── templates/
-│   ├── index.html        # Home Page (HTML normal, Jinja2)
-│   ├── report.html       # Preview HTML y plantilla del PDF (sin imagenes)
-│   └── report_logo.html  # Igual que report.html pero incluye el logo
+│   ├── index.html
+│   ├── report.html
+│   └── report_logo.html
 └── README.md
 ```
+
+`assets/` y `templates/` son necesarios: la aplicacion sirve el logo y renderiza las
+plantillas tanto en las vistas previas como al generar los PDF.
+
+## Despliegue en Vercel
+
+Vercel detecta FastAPI automaticamente porque `main.py` expone la instancia `app`.
+`requirements.txt` declara las dependencias de ejecucion y `.python-version` selecciona
+Python 3.14. No se necesita `vercel.json`: Vercel enruta las solicitudes a la aplicacion
+y detecta los archivos estaticos montados con FastAPI.
+
+Importa el repositorio en Vercel o ejecuta `vercel deploy` desde la raiz del proyecto.
+No configures un comando de build ni un directorio de salida.
 
 ## Rutas
 
@@ -358,7 +372,7 @@ if result.err:
 
 ## Verificacion rapida
 
-Con el servidor en ejecucion:
+Con la aplicacion desplegada o ejecutandose localmente:
 
 ```bash
 curl -s -o preview.html        http://127.0.0.1:8000/report
