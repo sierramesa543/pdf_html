@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 2cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #1f2937;
+        }
+        h1 {
+            color: #2563eb;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 10px;
+            margin-bottom: 16px;
+        }
+        table {
+            width: 100%;
+        }
+        th {
+            background-color: #2563eb;
+            color: #ffffff;
+            text-align: left;
+            padding: 6px 8px;
+            border: 1px solid #1d4ed8;
+        }
+        td {
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+        }
+        tr:nth-child(even) td {
+            background-color: #f3f4f6;
+        }
+        .right {
+            text-align: right;
+        }
+        .total {
+            font-weight: bold;
+            color: #2563eb;
+        }
+    </style>
+    {% if preview %}
+    <style>
+        body {
+            background: #eef1f6;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        .preview-info {
+            max-width: 800px;
+            margin: 0 auto 1rem auto;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            color: #4b5563;
+            font-size: 14px;
+        }
+        .sheet {
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        .actions {
+            max-width: 800px;
+            margin: 1.5rem auto 0 auto;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            gap: 0.75rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .btn:hover { background: #1d4ed8; }
+        .btn.secondary {
+            background: #ffffff;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+        .btn.secondary:hover { background: #eff6ff; }
+    </style>
+    {% endif %}
+</head>
+<body>
+    {% if preview %}
+    <div class="preview-info">
+        Vista previa del reporte. El PDF se genera a partir de esta misma plantilla HTML.
+    </div>
+    <!-- El contenedor .sheet se abre solo en preview y se cierra mas abajo, para
+         conservar el efecto de hoja en la web sin afectar el PDF. -->
+    <main class="sheet">
+    {% endif %}
+
+    <h1>{{ title }}</h1>
+    <div class="subtitle">Generado con xhtml2pdf + FastAPI + Jinja2</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Categoria</th>
+                <th class="right">Precio</th>
+                <th class="right">Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td class="right">${{ "%.2f"|format(product.price) }}</td>
+                <td class="right">{{ product.stock }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="total">Total de productos: {{ products|length }}</p>
+
+    {% if preview %}
+    <!-- Cierre del <main class="sheet"> abierto arriba (solo existe en preview). -->
+    </main>
+    <div class="actions">
+        <a class="btn" href="/report/pdf">Descargar PDF</a>
+        <a class="btn secondary" href="/">Volver al inicio</a>
+    </div>
+    {% endif %}
+</body>
+</html>
